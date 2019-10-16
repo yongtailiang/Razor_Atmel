@@ -35,7 +35,8 @@ Runs current task state.  Should only be called once in main loop.
 **********************************************************************************************************************/
 
 #include "configuration.h"
-
+u32 timer=500;
+u8 u8Counter=0;
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
 All Global variable names shall start with "G_UserApp1"
@@ -85,9 +86,12 @@ Requires:
 Promises:
   - 
 */
+
+
 void UserApp1Initialize(void)
 {
- 
+  
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -116,6 +120,13 @@ Requires:
 Promises:
   - Calls the function to pointed by the state machine function pointer
 */
+void delay(void)
+{u32 j=500;
+j--;
+
+
+}
+
 void UserApp1RunActiveState(void)
 {
   UserApp1_StateMachine();
@@ -136,6 +147,55 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
+
+timer--;
+if(timer==0)
+{timer=100;u8Counter++;if(u8Counter>=16) u8Counter=0; }
+ LedOff(WHITE); 
+ LedOff(PURPLE); 
+ LedOff(BLUE); 
+ LedOff(CYAN); 
+ LedOff(GREEN); 
+ LedOff(YELLOW); 
+ LedOff(ORANGE); 
+ LedOff(RED);  
+ LedOn(LCD_RED); 
+ LedOn(LCD_GREEN); 
+ LedOn(LCD_BLUE);
+ 
+ if(u8Counter==0) 
+ { LedOff(CYAN); LedOff(GREEN);LedOn(WHITE);LedOn(RED);}
+ if(u8Counter==1)
+ { LedOff(WHITE);LedOff(RED); LedOn(PURPLE); LedOn(ORANGE);   }
+  if(u8Counter==2)
+  {LedOff(PURPLE); LedOff(ORANGE); LedOn(BLUE); LedOn(YELLOW); }
+  if(u8Counter==3)
+  { LedOff(BLUE); LedOff(YELLOW); LedOn(CYAN); LedOn(GREEN); }
+  if(u8Counter==4)
+ {LedOff(CYAN); LedOff(YELLOW); LedOn(BLUE); LedOn(YELLOW); }
+   if(u8Counter==5)
+  { LedOff(BLUE);LedOff(GREEN); LedOn(PURPLE); LedOn(ORANGE);   }
+    if(u8Counter==6)
+      { LedOff(PURPLE); LedOff(ORANGE);LedOn(WHITE);LedOn(RED);}
+if(u8Counter==7)
+{LedOff(WHITE);LedOff(RED);LedOn(WHITE);} 
+if(u8Counter==8)
+{LedOff(WHITE); LedOn(PURPLE);}
+if(u8Counter==9)
+{LedOff(PURPLE); LedOn(BLUE);}
+if(u8Counter==10)
+{LedOff(BLUE); LedOn(CYAN);}
+if(u8Counter==11)
+{LedOff(CYAN); LedOn(GREEN); }
+if(u8Counter==12)
+{LedOff(GREEN);LedOn(YELLOW);}
+if(u8Counter==13)
+{LedOff(YELLOW);  LedOn(ORANGE);}
+if(u8Counter==14)
+{LedOff(ORANGE); LedOn(LCD_BLUE);}
+
+ 
+
 
 } /* end UserApp1SM_Idle() */
     
