@@ -35,8 +35,8 @@ Runs current task state.  Should only be called once in main loop.
 **********************************************************************************************************************/
 
 #include "configuration.h"
-u32 count1=100;
-u32 v=500;
+u32 frequency=100;
+u32 velocity=500;
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
 All Global variable names shall start with "G_UserApp1"
@@ -87,8 +87,9 @@ Promises:
   - 
 */
 void UserApp1Initialize(void)
-{ u8 au8Message[] = "(Have fun!)"; 
-LCDMessage(LINE1_START_ADDR, au8Message);
+{ LCDCommand(LCD_CLEAR_CMD);
+  u8 au8Message[] = "    Have fun!"; 
+LCDMessage(LINE1_START_ADDR+2, au8Message);
  
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -156,9 +157,10 @@ RT, RT, HT, RT, RT, RT, RT, RT, RT, RT, HT, HT};
  static bool bNoteActiveNextRight = TRUE; 
  u8 u8CurrentIndex;
  
- count1--;
- if(count1==0)
- {count1=200;v=v-5;if(v<=250)v=300;}
+frequency--;
+ if(frequency==0)
+ {frequency=200;velocity=velocity-5;
+ if(velocity<=250)velocity=300;}
  
  
  
@@ -287,7 +289,7 @@ STACCATO_NOTE_TIME;
   ButtonAcknowledge(BUTTON0);
  }
   }
-   if(u16BlinkCount==v)
+   if(u16BlinkCount==velocity)
 {u16BlinkCount=0;
    if (u8Return==u8Counter)
   {
@@ -298,7 +300,9 @@ STACCATO_NOTE_TIME;
    
   }
   else
-  {  
+  {  LCDCommand(LCD_CLEAR_CMD);
+    u8 au8Message[] = "  GOODGAME!"; 
+    LCDMessage(LINE1_START_ADDR+4, au8Message);
    LedOn(WHITE);
    u8Counter=10000;   
   }
