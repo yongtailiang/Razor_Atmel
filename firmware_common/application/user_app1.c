@@ -35,7 +35,8 @@ Runs current task state.  Should only be called once in main loop.
 **********************************************************************************************************************/
 
 #include "configuration.h"
-
+u32 count1=100;
+u32 v=500;
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
 All Global variable names shall start with "G_UserApp1"
@@ -154,6 +155,15 @@ RT, RT, HT, RT, RT, RT, RT, RT, RT, RT, HT, HT};
  static u16 u16NoteSilentDurationRight = 0; 
  static bool bNoteActiveNextRight = TRUE; 
  u8 u8CurrentIndex;
+ 
+ count1--;
+ if(count1==0)
+ {count1=200;v=v-5;if(v<=250)v=300;}
+ 
+ 
+ 
+ 
+ 
  if(IsTimeUp(&u32RightTimer, (u32)u16CurrentDurationRight)) 
  { 
  u32RightTimer = G_u32SystemTime1ms; 
@@ -277,7 +287,7 @@ STACCATO_NOTE_TIME;
   ButtonAcknowledge(BUTTON0);
  }
   }
-   if(u16BlinkCount==350)
+   if(u16BlinkCount==v)
 {u16BlinkCount=0;
    if (u8Return==u8Counter)
   {
