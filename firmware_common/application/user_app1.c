@@ -35,7 +35,8 @@ Runs current task state.  Should only be called once in main loop.
 **********************************************************************************************************************/
 
 #include "configuration.h"
-
+u32 frequency=100;
+u32 velocity=500;
 /***********************************************************************************************************************
 Global variable definitions with scope across entire project.
 All Global variable names shall start with "G_UserApp1"
@@ -86,7 +87,9 @@ Promises:
   - 
 */
 void UserApp1Initialize(void)
-{
+{ LCDCommand(LCD_CLEAR_CMD);
+  u8 au8Message[] = "    Have fun!"; 
+LCDMessage(LINE1_START_ADDR+2, au8Message);
  
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -134,10 +137,179 @@ State Machine Function Definitions
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Wait for ??? */
+
 static void UserApp1SM_Idle(void)
 {
+static u16 u16BlinkCount=0;
+ static u8 u8Counter=1;
+ static u16 u8Return=0;
+ int i=0,j=0;
+ static u16 au16NotesRight[] = {F5, F5, F5, F5, F5, E5, D5, E5, F5, G5, A5, A5, A5, A5, A5, G5, F5, G5, A5, 
+A5S, C6, F5, F5, D6, C6, A5S, A5, G5, F5, NO, NO}; 
+ static u16 au16DurationRight[] = {QN, QN, HN, EN, EN, EN, EN, EN, EN, QN, QN, QN, HN, EN, EN, EN, EN, EN, EN, 
+QN, HN, HN, EN, EN, EN, EN, QN, QN, HN, HN, FN}; 
+ static u16 au16NoteTypeRight[] = {RT, RT, HT, RT, RT, RT, RT, RT, RT, RT, RT, RT, HT, RT, RT, RT, RT, RT, RT, 
+RT, RT, HT, RT, RT, RT, RT, RT, RT, RT, HT, HT};
+  static u8 u8IndexRight = 0; 
+ static u32 u32RightTimer = 0; 
+ static u16 u16CurrentDurationRight = 0; 
+ static u16 u16NoteSilentDurationRight = 0; 
+ static bool bNoteActiveNextRight = TRUE; 
+ u8 u8CurrentIndex;
+ 
+frequency--;
+ if(frequency==0)
+ {frequency=200;velocity=velocity-5;
+ if(velocity<=250)velocity=300;}
+ 
+ 
+ 
+ 
+ 
+ if(IsTimeUp(&u32RightTimer, (u32)u16CurrentDurationRight)) 
+ { 
+ u32RightTimer = G_u32SystemTime1ms; 
+ u8CurrentIndex = u8IndexRight; 
+ /* Set up to play current note */ 
+ if(bNoteActiveNextRight) 
+ { 
+ if(au16NoteTypeRight[u8CurrentIndex] == RT) 
+ { u16CurrentDurationRight = au16DurationRight[u8CurrentIndex] - 
+REGULAR_NOTE_ADJUSTMENT; 
+ u16NoteSilentDurationRight = REGULAR_NOTE_ADJUSTMENT; 
+ bNoteActiveNextRight = FALSE;
+ } /* end RT case */ 
+ else if(au16NoteTypeRight[u8CurrentIndex] == ST) 
+ { u16CurrentDurationRight = STACCATO_NOTE_TIME; 
+ u16NoteSilentDurationRight = au16DurationRight[u8CurrentIndex] - 
+STACCATO_NOTE_TIME; 
+ bNoteActiveNextRight = FALSE;
+ } /* end ST case */ 
+ else if(au16NoteTypeRight[u8CurrentIndex] == HT) 
+ { u16CurrentDurationRight = au16DurationRight[u8CurrentIndex];
+ u16NoteSilentDurationRight = 0; 
+ bNoteActiveNextRight = TRUE; 
+ u8IndexRight++; 
+ if(u8IndexRight == sizeof(au16NotesRight) / sizeof(u16) ) 
+ { 
+ u8IndexRight = 0; 
+ }
+ }
 
-} /* end UserApp1SM_Idle() */
+ if(au16NotesRight[u8CurrentIndex] != NO) 
+ { 
+ PWMAudioSetFrequency(BUZZER1, au16NotesRight[u8CurrentIndex]); 
+ PWMAudioOn(BUZZER1); 
+ } 
+ else 
+ { 
+ PWMAudioOff(BUZZER1); 
+ } 
+ } 
+ else 
+ { PWMAudioOff(BUZZER1); 
+ u32RightTimer = G_u32SystemTime1ms; 
+ u16CurrentDurationRight = u16NoteSilentDurationRight;
+ bNoteActiveNextRight = TRUE; 
+ u8IndexRight++; 
+ if(u8IndexRight == sizeof(au16NotesRight) / sizeof(u16) ) 
+ { 
+ u8IndexRight = 0; 
+ } 
+ } 
+
+ } 
+ 
+ 
+ 
+ 
+ 
+ if(u8Counter!=10000)
+ { 
+   u16BlinkCount++;
+
+  for(i=0;i<100;i++)
+   {
+     if(u8Counter==1)
+     {
+     LedOn(RED);
+     LedOff(GREEN);
+     LedOff(YELLOW);
+     LedOff(ORANGE);
+     }   
+    else
+     LedOff(RED);
+    if(u8Counter==2)
+    {
+    LedOn(ORANGE);
+    LedOff(RED);
+    LedOff(GREEN);
+    LedOff(YELLOW);
+    }
+   else
+     LedOff(ORANGE);
+    if(u8Counter==3)
+    {
+    LedOn(YELLOW);
+    LedOff(ORANGE);
+    LedOff(GREEN);
+    LedOff(RED);
+    }
+   else
+     LedOff(YELLOW);
+    if(u8Counter==4)
+    {
+    LedOn(GREEN);
+    LedOff(YELLOW);
+    LedOff(ORANGE);
+    LedOff(RED);
+    }
+   else
+     LedOff(GREEN);
+  }
+
+  {   if(WasButtonPressed(BUTTON3))
+ {
+ u8Return=1;
+ ButtonAcknowledge(BUTTON3);
+ }
+ if(WasButtonPressed(BUTTON2))
+ {
+ u8Return=2;
+  ButtonAcknowledge(BUTTON2);
+ }
+ if(WasButtonPressed(BUTTON1))
+ {
+ u8Return=3;
+  ButtonAcknowledge(BUTTON1);
+ }
+ if(WasButtonPressed(BUTTON0))
+ {
+ u8Return=4;
+  ButtonAcknowledge(BUTTON0);
+ }
+  }
+   if(u16BlinkCount==velocity)
+{u16BlinkCount=0;
+   if (u8Return==u8Counter)
+  {
+    i=u8Counter;
+    u8Counter=rand()%4+1;
+    while(i==u8Counter)
+    {u8Counter=rand()%4+1;}
+   
+  }
+  else
+  {  LCDCommand(LCD_CLEAR_CMD);
+    u8 au8Message[] = "  GOODGAME!"; 
+    LCDMessage(LINE1_START_ADDR+4, au8Message);
+   LedOn(WHITE);
+   u8Counter=10000;   
+  }
+}
+}
+}
+ /* end UserApp1SM_Idle() */
     
 
 /*-------------------------------------------------------------------------------------------------------------------*/
